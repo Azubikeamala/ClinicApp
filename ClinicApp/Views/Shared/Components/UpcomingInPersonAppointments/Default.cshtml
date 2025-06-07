@@ -1,0 +1,15 @@
+﻿@model List<Clinic.Entities.Appointment>
+
+<div class="card p-2">
+    <h6>Upcoming In-person Appointments</h6>
+    <p>Showing at least @Model.Count appointment(s)</p>
+    <ul class="list-group list-group-flush">
+        @foreach (var appt in Model)
+        {
+            <li class="list-group-item">
+                <strong>@appt.AppointmentDate?.ToShortDateString()</strong> —
+                @appt.PatientName (on @appt.Schedule?.Name schedule)
+            </li>
+        }
+    </ul>
+</div>

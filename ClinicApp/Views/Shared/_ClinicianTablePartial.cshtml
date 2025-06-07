@@ -1,0 +1,21 @@
+﻿@model List<Clinic.Entities.Clinician>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Registration #</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var clinician in Model)
+        {
+            <tr>
+                <td>@clinician.ProfessionalRegistrationNumber</td>
+                <td>@clinician.FirstName</td>
+                <td>@clinician.LastName</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,21 @@
+﻿@model List<Clinic.Entities.Appointment>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Patient name</th>
+            <th>Date</th>
+            <th>Appointment type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appt in Model)
+        {
+            <tr>
+                <td>@appt.PatientName</td>
+                <td>@appt.AppointmentDate?.ToShortDateString()</td>
+                <td>@appt.AppointmentType</td>
+            </tr>
+        }
+    </tbody>
+</table>

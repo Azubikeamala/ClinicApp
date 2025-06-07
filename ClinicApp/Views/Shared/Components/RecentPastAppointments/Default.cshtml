@@ -1,0 +1,17 @@
+﻿@model ClinicApp.Components.AppointmentsViewModel
+
+<div class="card p-2">
+    <h5>Recent Past Appointments</h5>
+    <p>Showing at least @Model.NumberOfAppointmentsToDisplay appointment(s)</p>
+
+    <ul class="list-group list-group-flush">
+        @for (int i = 0; i < Math.Min(Model.NumberOfAppointmentsToDisplay, Model.Appointments?.Count ?? 0); i++)
+        {
+            var appt = Model.Appointments[i];
+            <li class="list-group-item">
+                <strong>@appt.AppointmentDate?.ToShortDateString()</strong> — @appt.PatientName
+                <span class="text-muted">(on @appt.Schedule?.Name schedule)</span>
+            </li>
+        }
+    </ul>
+</div>

@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "ClinicApp for Booking Appointments";
+}
+
+<p>
+    <a asp-controller="Schedule" asp-action="GetAllSchedules">View all schedules</a>
+    <span class="mx-1">|</span>
+    <a asp-controller="Schedule" asp-action="GetAddScheduleRequest">Add a new schedule</a>
+</p>
+<div class="row">
+    <div class="col-sm-6">
+        <vc:recent-past-appointments number-of-appointments-to-display="3" />
+    </div>
+    <div class="col-sm-6">
+        <vc:upcoming-in-person-appointments count="3" />
+
+    </div>
+</div>

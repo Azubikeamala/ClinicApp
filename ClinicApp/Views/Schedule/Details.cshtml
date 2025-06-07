@@ -1,0 +1,133 @@
+﻿@model ClinicApp.Models.ScheduleDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ClinicApp.Entities.User> SignInManager
+@inject UserManager<ClinicApp.Entities.User> UserManager
+
+@{
+    ViewData["Title"] = "Manage Schedule – ClinicApp";
+    bool isAuthenticated = SignInManager.IsSignedIn(User);
+    bool isAdmin = User.IsInRole("Admin");
+}
+
+<div class="mb-3">
+    <a asp-controller="Schedule" asp-action="GetAllSchedules">All schedules</a>
+    <span class="mx-1">|</span>
+    @if (isAuthenticated)
+    {
+        <a asp-controller="Schedule" asp-action="GetAddScheduleRequest">Add new schedule</a>
+        <span class="mx-1">|</span>
+        <a asp-controller="Schedule" asp-action="GetEditRequestById" asp-route-id="@Model.Schedule.ScheduleId">Edit this schedule</a>
+    }
+</div>
+
+@if (TempData["LastActionMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["LastActionMessage"]
+    </div>
+}
+
+<div class="mb-3">
+    <h5>Schedule summary:</h5>
+    <p>The schedule "@Model.Schedule.Name" was created on @Model.Schedule.DateCreated?.ToShortDateString()</p>
+    <p>
+        In person appointments: @Model.Appointments.Count(a => a.AppointmentType == Clinic.Entities.AppointmentTypeOptions.InPerson)<br />
+        Phone appointments: @Model.Appointments.Count(a => a.AppointmentType == Clinic.Entities.AppointmentTypeOptions.Phone)<br />
+        Video appointments: @Model.Appointments.Count(a => a.AppointmentType == Clinic.Entities.AppointmentTypeOptions.Video)
+    </p>
+</div>
+
+<div class="row border p-3 mb-4">
+    <div class="col-md-9">
+        <h6>Clinicians on this schedule:</h6>
+        @await Html.PartialAsync("_ClinicianTablePartial", Model.Clinicians)
+    </div>
+    <div class="col-md-3">
+        @if (isAuthenticated)
+        {
+            <form asp-action="AddClinician" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ScheduleId" value="@Model.Schedule.ScheduleId" />
+
+                <div class="mb-2">
+                    <label asp-for="NewClinician.FirstName" class="form-label">First name</label>
+                    <input asp-for="NewClinician.FirstName" class="form-control" />
+                    <span asp-validation-for="NewClinician.FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="NewClinician.LastName" class="form-label">Last name</label>
+                    <input asp-for="NewClinician.LastName" class="form-control" />
+                    <span asp-validation-for="NewClinician.LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NewClinician.ProfessionalRegistrationNumber" class="form-label">Professional registration #</label>
+                    <input asp-for="NewClinician.ProfessionalRegistrationNumber" class="form-control" />
+                    <span asp-validation-for="NewClinician.ProfessionalRegistrationNumber" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm">Add clinician</button>
+            </form>
+        }
+        else
+        {
+            <p class="text-muted small">Log in to add clinicians.</p>
+        }
+    </div>
+</div>
+
+<div class="row border p-3">
+    <div class="col-md-9">
+        <h6>Appointments for this schedule:</h6>
+        @await Html.PartialAsync("_AppointmentsTablePartial", Model.Appointments)
+    </div>
+    <div class="col-md-3">
+        @if (isAuthenticated)
+        {
+            <form asp-action="AddAppointment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ScheduleId" value="@Model.Schedule.ScheduleId" />
+
+                <div class="mb-2">
+                    <label asp-for="NewAppointment.PatientName" class="form-label">Patient name</label>
+                    <input asp-for="NewAppointment.PatientName" class="form-control" />
+                    <span asp-validation-for="NewAppointment.PatientName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="NewAppointment.AppointmentDate" class="form-label">Date</label>
+                    <input asp-for="NewAppointment.AppointmentDate" type="date" class="form-control" />
+                    <span asp-validation-for="NewAppointment.AppointmentDate" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NewAppointment.AppointmentType" class="form-label">Appointment type</label>
+                    <select asp-for="NewAppointment.AppointmentType" class="form-select"
+                            asp-items="Html.GetEnumSelectList<Clinic.Entities.AppointmentTypeOptions>()"></select>
+                    <span asp-validation-for="NewAppointment.AppointmentType" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm">Add new appointment</button>
+            </form>
+        }
+        else
+        {
+            <p class="text-muted small">Log in to add appointments.</p>
+        }
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <div class="mt-3">
+        <form asp-action="ProcessDeleteRequestById" asp-route-id="@Model.Schedule.ScheduleId" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger btn-sm">Delete this schedule</button>
+        </form>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
